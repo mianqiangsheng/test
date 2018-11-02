@@ -4,10 +4,11 @@ package test;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import com.migu.cmam.dbmodel.content.ChargeInfo;
+//import com.migu.cmam.dbmodel.content.ChargeInfo;
 import com.sun.org.apache.xpath.internal.SourceTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -1455,6 +1456,7 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 //        System.out.println(Arrays.toString(LIST.toArray()));
 //        new Colored<>();
 
+        System.out.println(StringUtils.arrayToDelimitedString(new Integer[]{1,2,3,4,5}, "; "));
 
 
     }
@@ -1500,30 +1502,30 @@ public class Colored<K, V> extends AbstractMap<K, V> {
     }
 
 
-    static class chargeInfoTypeAdapter extends TypeAdapter {
-
-        @Override
-        public void write(JsonWriter out, Object value) throws IOException {
-            ChargeInfo chargeInfo = (ChargeInfo)value;
-
-            List<String> productIds = Arrays.asList(chargeInfo.getProductId().split(","));
-            for(String productId:productIds){
-                out.beginObject();
-                out.name("productId").value(productId);
-                out.name("proportion1").value(chargeInfo.getProportion1());
-                out.name("proportion2").value(chargeInfo.getProportion2());
-                out.name("proportion3").value(chargeInfo.getProportion3());
-                out.endObject();
-            }
-
-
-        }
-
-        @Override
-        public Object read(JsonReader in) throws IOException {
-            return null;
-        }
-    }
+//    static class chargeInfoTypeAdapter extends TypeAdapter {
+//
+//        @Override
+//        public void write(JsonWriter out, Object value) throws IOException {
+//            ChargeInfo chargeInfo = (ChargeInfo)value;
+//
+//            List<String> productIds = Arrays.asList(chargeInfo.getProductId().split(","));
+//            for(String productId:productIds){
+//                out.beginObject();
+//                out.name("productId").value(productId);
+//                out.name("proportion1").value(chargeInfo.getProportion1());
+//                out.name("proportion2").value(chargeInfo.getProportion2());
+//                out.name("proportion3").value(chargeInfo.getProportion3());
+//                out.endObject();
+//            }
+//
+//
+//        }
+//
+//        @Override
+//        public Object read(JsonReader in) throws IOException {
+//            return null;
+//        }
+//    }
 
         public static String formatStr(String str,int number){
         StringBuilder stringBuilder = new StringBuilder();
