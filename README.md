@@ -14,3 +14,6 @@ ThreadLocal与线程池的应用注意点——注意复用线程会存在变量
 <excludes>
   <exclude>test/Colored.java</exclude>
 </excludes>
+
+#Test2.java
+java代码使用restemplate调用外部的https的接口
