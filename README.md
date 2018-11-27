@@ -18,8 +18,19 @@ ThreadLocal与线程池的应用注意点——注意复用线程会存在变量
 #Test2.java
 java代码使用restemplate调用外部的https的接口
 
+#Test3.java
+使用java的I/O和NIO的性能比较
 
+#test3.block（代码包）
+使用BIO(阻塞I/O)进行文件的传输
 
+#test3.NonBlock代码包）
+使用基于NIO的文件数据传输,这里在试验的时候，对大文件传输可能会出现文件不传完全的情况，不知道怎么解决...
+test3.NonBlock.formal包里的代码是正式代码，实现了web服务器单线程管理多个channel连接，同时启用多线程
+进行接收消息后的业务处理，模拟了Tomcat、Netty、Nginx的大量长连接、少数活跃连接(真正在传输数据)的业务场景
+
+#ChannelTest.java
+使用多种方式获得channel，并用多种方式实现基于channel的文件间的拷贝复制
 
 # 研究多线程相关知识
 

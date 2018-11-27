@@ -39,7 +39,7 @@ public class NoBlockServer {
                 while (iterator.hasNext()) {
 
                     SelectionKey selectionKey = iterator.next();
-
+                    iterator.remove();
                     // 接收事件就绪
                     if (selectionKey.isAcceptable()) {
 
@@ -49,7 +49,6 @@ public class NoBlockServer {
                         client.configureBlocking(false);
                         // 8.2 注册到选择器上-->拿到客户端的连接为了读取通道的数据(监听读就绪事件)
                         client.register(selector, SelectionKey.OP_READ);
-//                        client.register(selector, SelectionKey.OP_WRITE);
 
                     } else if (selectionKey.isReadable()) {// 读事件就绪
                         // 9. 获取当前选择器读就绪状态的通道
@@ -58,35 +57,26 @@ public class NoBlockServer {
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
                         // 9.2得到文件通道，将客户端传递过来的图片写到本地项目下(写模式、没有则创建)
                         try (FileChannel outChannel = FileChannel.open(Paths.get("D:\\star_src_1_600_400_1.jpg"), StandardOpenOption.WRITE, StandardOpenOption.CREATE)) {
-
-                            while (client.read(buffer) != -1) {
-
-                                // 在读之前都要切换成读模式
+                            int num = 0;
+                            while ((num = client.read(buffer)) > 0) {
                                 buffer.flip();
-
+                                // 写入文件
                                 outChannel.write(buffer);
-
-                                // 读完切换成写模式，能让管道继续读取文件的数据
                                 buffer.clear();
                             }
 
+                            // 调用close为-1 到达末尾
+                            if (num == -1) {
+                                outChannel.close();
+                                System.out.println("上传完毕");
+                                buffer.put((client.getRemoteAddress() + "上传成功").getBytes());
+                                buffer.clear();
+                                client.write(buffer);
+                                selectionKey.cancel();
+                            }
                         }
-//                        // 8.1 切换成非阻塞状态
-//                        client.configureBlocking(false);
-//                        // 8.2 注册到选择器上-->拿到客户端的连接为了读取通道的数据(监听读就绪事件)
-//                        client.register(selector, SelectionKey.OP_WRITE);
-
                     }
-//                    else if (selectionKey.isWritable()){
-//                        SocketChannel client = (SocketChannel) selectionKey.channel();
-//                        ByteBuffer buffer = ByteBuffer.allocate(1024);
-//                        buffer.put("img has been recieved succeccfully!".getBytes("UTF-8"));
-//                        buffer.flip();
-//                        client.write(buffer);
-//                    }
 
-                    // 10. 取消选择键(已经处理过的事件，就应该取消掉了)
-                    iterator.remove();
                 }
 
             }

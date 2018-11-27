@@ -19,7 +19,7 @@ public class BlockClient {
         try (SocketChannel socketChannel = SocketChannel.open(new InetSocketAddress("127.0.0.1", 6666))) {
 
             // 2. 发送一张图片给服务端吧
-            try (FileChannel fileChannel = FileChannel.open(Paths.get("D:\\star_src_1_600_400.jpg"), StandardOpenOption.READ)) {
+            try (FileChannel fileChannel = FileChannel.open(Paths.get("D:\\star.jpg"), StandardOpenOption.READ)) {
 
                 // 3.要使用NIO，有了Channel，就必然要有Buffer，Buffer是与数据打交道的呢
                 ByteBuffer buffer = ByteBuffer.allocate(1024);
