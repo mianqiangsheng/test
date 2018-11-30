@@ -32,6 +32,22 @@ test3.NonBlock.formal包里的代码是正式代码，实现了web服务器单�
 #ChannelTest.java
 使用多种方式获得channel，并用多种方式实现基于channel的文件间的拷贝复制
 
+#DataGramChannelTest.java
+使用UDP传输协议的数据传输方式，不像TCP协议那样需要握手等一系列对传输质量的保证控制，但是传输速度更快，占用资源更少。
+参考：http://donald-draper.iteye.com/blog/2373281
+
+#PipedTest.java
+分别使用流形式的PipedInputStream/PipedOutputStream 和管道形式的Pipe.SourceChannel/Pipe.SinkChannel实现线程间的信息传输。
+如果一个管道的写端一直在写，而读端的引用计数是否大于0决定管道是否会堵塞，引用计数大于0，只写不读再次调用write会导致管道堵塞； 
+如果一个管道的读端一直在读，而写端的引用计数是否大于0决定管道是否会堵塞，引用计数大于0，只读不写再次调用read会导致管道堵塞； 
+而当有一端的引用计数等于0时，（读端引用为零）只写不读会导致写端的进程收到一个SIGPIPE信号，导致进程终止，（写端引用为零）只读不写会导致read返回0,就像读到文件末尾一样。
+引用指的是管道是否有线程在使用。
+--------------------- 
+作者：sky_Mata 
+来源：CSDN 
+原文：https://blog.csdn.net/skyroben/article/details/71513385 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+
 # 研究多线程相关知识
 
 ## 不可重入锁和可重入锁 （代码包）
