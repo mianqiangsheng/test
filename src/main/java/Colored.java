@@ -1,23 +1,16 @@
-package test;
 
-
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-//import com.migu.cmam.dbmodel.content.ChargeInfo;
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -25,10 +18,9 @@ import java.util.regex.Pattern;
 /**
  * Created by lizhen on 2018/3/14.
  */
-
 class B {
-    static String name = "lizhen";
 
+    static String name = "lizhen";
 }
 
 
@@ -77,6 +69,7 @@ class Student implements Cloneable {
         return newStudent;
     }
 
+
 }
 
 class Professor implements Cloneable {
@@ -121,6 +114,8 @@ interface Food {
         return seed + "has grown up!";
     }
 }
+
+interface ModelDriven<T> {}
 
 //@JsonIgnoreProperties({"mount", "place"})
 //@JsonFilter("myFilter")
@@ -374,6 +369,8 @@ interface A {
 }
 
 public class Colored<K, V> extends AbstractMap<K, V> {
+
+    private HashMap<Integer, List<String>> myMap;
 
     private static final Logger log = LoggerFactory.getLogger(Colored.class);
 
@@ -1452,14 +1449,106 @@ public class Colored<K, V> extends AbstractMap<K, V> {
          */
 //        System.out.println(unicode2String("\\u007c"));
 
-//        LIST.add("b");
-//        System.out.println(Arrays.toString(LIST.toArray()));
-//        new Colored<>();
+        /**
+         * ResolvableType的使用——提供一种全面的了解某个类的描述的途径
+         * Encapsulates a Java Type, providing access to supertypes, interfaces, and generic parameters along with         * the ability to ultimately resolve to a Class.
+         * ResolvableTypes may be obtained from fields, method parameters, method returns or classes.
+         */
+//        Field[] declaredFields = Colored.class.getDeclaredFields();
+//        System.out.println(Arrays.toString(declaredFields));
+//
+//        try {
+//            ResolvableType t = ResolvableType.forField(Colored.class.getDeclaredField("myMap"));
+//            System.out.println(t); //HashMap<java.lang.Integer, java.util.List<java.lang.String>>
+//            System.out.println(t.getSuperType()); // AbstractMap<Integer, List<String>>
+//            System.out.println(t.asMap()); // Map<Integer, List<String>>
+//            System.out.println(t.getGeneric(0).resolve()); // Integer
+//            System.out.println(t.getGeneric(1).resolve()); // List
+//            System.out.println(t.getGeneric(1)); // List<String>
+//            System.out.println(t.resolveGeneric(1, 0)); // String
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        }
+//        /*
+//        或者
+//         */
+//        Field[] fields = Colored.class.getDeclaredFields();
+//        for (int i = 0; i < fields.length; i++) {
+////            fields[i].setAccessible(true);
+//            if ("myMap".equals(fields[i].getName())){
+//                try {
+//                    System.out.println(ResolvableType.forField(fields[i]));
+//                } catch (IllegalArgumentException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
-        System.out.println(StringUtils.arrayToDelimitedString(new Integer[]{1,2,3,4,5}, "; "));
+//        System.out.println(new BCryptPasswordEncoder().encode("Ig20181103"));
+//
+//        System.out.println(UUID.randomUUID().toString());
 
+        /**
+         * List的retainAll、removeAll、addAll
+         */
+//        String[] strings = StringUtils.split("1,4,5", ",");
+//        String[] strings1 = StringUtils.split("1,2,3,5,6",",");
+//
+//        List<String> stringsList = new ArrayList();
+//        List<String> strings1List = new ArrayList();
+//        Collections.addAll(stringsList,strings);
+//        Collections.addAll(strings1List,strings1);
+//
+//        System.out.println(Arrays.toString(strings));
+//        System.out.println(Arrays.toString(strings1));
+//        System.out.println(stringsList.retainAll(strings1List));//将stringsList中与strings1List相交的元素保留，返回的boolean表示stringsList是否因此改变了。
+//
+//        System.out.println(Arrays.toString(stringsList.toArray()));
+//        System.out.println(Arrays.toString(strings1List.toArray()));
+
+        /**
+         * getGenericSuperclass()&getGenericInterfaces() 获得泛型参数类 ParameterizedType，来动态构造类，这里构造了类中的model实例为传入的泛型参数类
+         */
+//       StudentAction studentAction = new StudentAction();
+//       DinnerAction dinnerAction = new DinnerAction();
+//
+//        System.out.println(studentAction.getModel());
+//        System.out.println(dinnerAction.getModel());
 
     }
+
+
+    static class StudentAction extends BaseAction<Student>{}
+    static class DinnerAction extends BaseAction<Dinner>{}
+
+    /**
+     * 这里ModelDriven<T> 没有使用，可以去掉
+     * @param <T>
+     */
+     static class BaseAction<T> implements ModelDriven<T> {
+        //在构造方法中动态获取实体类型，通过反射创建model对象
+         T model;
+        public BaseAction() {
+            ParameterizedType genericSuperclass = (ParameterizedType) this.getClass().getGenericSuperclass();
+            //获得BaseAction上声明的泛型数组
+            Type[] actualTypeArguments = genericSuperclass.getActualTypeArguments();
+            Class<T> entityClass = (Class<T>) actualTypeArguments[0];
+            //通过反射创建对象
+            try {
+                model = entityClass.newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+         public T getModel() {
+             return model;
+         }
+     }
+
+
 
     static final List<String> LIST = Collections.unmodifiableList(new ArrayList<String>(){
         {
@@ -1501,31 +1590,6 @@ public class Colored<K, V> extends AbstractMap<K, V> {
         return string.toString();
     }
 
-
-//    static class chargeInfoTypeAdapter extends TypeAdapter {
-//
-//        @Override
-//        public void write(JsonWriter out, Object value) throws IOException {
-//            ChargeInfo chargeInfo = (ChargeInfo)value;
-//
-//            List<String> productIds = Arrays.asList(chargeInfo.getProductId().split(","));
-//            for(String productId:productIds){
-//                out.beginObject();
-//                out.name("productId").value(productId);
-//                out.name("proportion1").value(chargeInfo.getProportion1());
-//                out.name("proportion2").value(chargeInfo.getProportion2());
-//                out.name("proportion3").value(chargeInfo.getProportion3());
-//                out.endObject();
-//            }
-//
-//
-//        }
-//
-//        @Override
-//        public Object read(JsonReader in) throws IOException {
-//            return null;
-//        }
-//    }
 
         public static String formatStr(String str,int number){
         StringBuilder stringBuilder = new StringBuilder();
