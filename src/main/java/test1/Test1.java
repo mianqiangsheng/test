@@ -18,6 +18,17 @@ public class Test1 implements Runnable{
         System.out.println("task-"+Thread.currentThread().getId()+"-student: "+ getStudent());
         studentThreadLocal.set(new Student(Thread.currentThread().getName(),(int)Thread.currentThread().getId()));
         stringThreadLocal.set(Thread.currentThread().getName());
+
+        /**
+         * 使用ThreadLocal.remove()将当前线程已经使用好的变量与当前线程解绑并清除值
+         */
+        studentThreadLocal.remove();
+        stringThreadLocal.remove();
+
+        System.out.println("task-"+Thread.currentThread().getId()+"-string-1: "+ getString());
+        System.out.println("task-"+Thread.currentThread().getId()+"-student-1: "+ getStudent());
+
+
         latch.countDown();
         latch1.countDown();
     }
@@ -27,7 +38,7 @@ public class Test1 implements Runnable{
         SERVICE.execute(this);
     }
 
-    class Student {
+    static class Student {
 
         private String name;
 
@@ -47,6 +58,9 @@ public class Test1 implements Runnable{
 
         public void setAge(int age) {
             this.age = age;
+        }
+
+        public Student() {
         }
 
         public Student(String name, int age) {
@@ -75,8 +89,8 @@ public class Test1 implements Runnable{
 //    static ExecutorService SERVICE = new ThreadPoolExecutor(2,2,0,
 //            TimeUnit.SECONDS, new LinkedBlockingDeque(10));
 
-    ThreadLocal<Student> studentThreadLocal = new ThreadLocal<>();
-    ThreadLocal<String> stringThreadLocal = new ThreadLocal<>();
+    MyThreadLocal<Student> studentThreadLocal = new MyThreadLocal<>(Student.class);
+    MyThreadLocal<String> stringThreadLocal = new MyThreadLocal<>(String.class);
 
 
     public void set(CountDownLatch latch, CountDownLatch latch1) {
@@ -109,6 +123,11 @@ public class Test1 implements Runnable{
 
         //创建任务
         Test1 t0 = new Test1();
+
+        //给当前main线程的ThreadLocal变量赋值
+        t0.studentThreadLocal.set(new Student(Thread.currentThread().getName(),(int)Thread.currentThread().getId()));
+        t0.stringThreadLocal.set(Thread.currentThread().getName());
+
         //放到线程中执行runnable，作为task1
         t0.execute(latch,latch1); //task1
         //等任务1执行完毕
@@ -122,7 +141,8 @@ public class Test1 implements Runnable{
         t0.execute(latch,latch1); //task2
         //等任务2执行完毕
         latch1.await();
-        //最后再输出t0任务对象的ThreadLocal变量，发现还是null，因为绑定的是当前main线程
+
+        //最后再输出t0任务对象的ThreadLocal变量，发现是有值的，因为绑定的是当前main线程
         System.out.println(t0.getString());
         System.out.println(t0.getStudent());
 
