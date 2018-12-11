@@ -29,6 +29,33 @@ java代码使用restemplate调用外部的https的接口
 test3.NonBlock.formal包里的代码是正式代码，实现了web服务器单线程管理多个channel连接，同时启用多线程
 进行接收消息后的业务处理，模拟了Tomcat、Netty、Nginx的大量长连接、少数活跃连接(真正在传输数据)的业务场景
 
+Selector
+selectedKeys集合 （【SelectionKey】channel，interestOps，readyOps，valid，attachment）
+Keys集合（【SelectionKey】）
+cancelledKeys集合（【SelectionKey】）
+
+Selector的Selector.select() 或 Selector.select(long) 或 Selector.selectNow() 操作执行的工作：
+1、在cancelledKeys集合中的SelectionKey都将从3个集合中删除，同时设置cancelledKeys集合为空；
+2、底层操作系统在select()方法开始执行时会更新每个剩余的channel的感兴趣的主题的准备就绪情况（interestOps），如果一个channel至少有一个感兴趣的主题准备就绪，则会执行以下2步：
+2.1、如果这个channel对应的SelectionKey没有在selectedKeys 集合中，SelectionKey会被添加进selectedKeys 集合，同时这个SelectionKey先前记录在就绪集（selectedKeys同时readyOps）中的任何准备就绪信息都被丢弃。
+2.2、如果这个channel对应的SelectionKey已经在selectedKeys 集合中，更新就绪集并且先前记录在就绪集中的任何准备信息都被保留。（实测代码没看出？难道是因为socketChannel的isReadable()方法因为只有接收了一次客户端的请求所以只会触发一次，后面再select()读就没有就绪了，所以只有isWritable()是被判断就绪.....如果2个select()期间，正好客户端又发送数据，则会保留读和写吗？）
+如果在步骤（2）开始时，keys集合所有的SelectionKey没有感兴趣的主题，则selectedKeys集合和就绪集合都不回被更新。
+3、如果在步骤（2）正在进行时将任何SelectionKey添加到cancelledKeys，则按步骤（1）处理它们。
+
+SelectableChannel.register(selector, SelectionKey.OP_READ)——绑定感兴趣的主题注册一个channel到selector中，会被添加进keys集合；
+SelectionKey.cancel() 或者 Channel.close() ——对应的SelectionKey会被添加到cancelledKeys集合中；
+Selector.select() 或 Selector.select(long) 或 Selector.selectNow() —— SelectionKey会被从selectedKeys 集合中添加（仅能通过Selector操作添加）或者移除。SelectionKey也可以通过Set<SelectionKey>.remove()或Iterator<SelectionKey>.remove()直接从selectedKeys集合中移除，除此之外不能够通过任何方式被直接移除。
+
+多线程并发情况下Selectors本身是线程安全的，但是他们所持有的key sets不是线程安全的。
+
+一个线程通过selector.select()或selector.select(long)方法产生的阻塞可以被其他线程用以下三种方式的任意一种来中断：
+1、By invoking the selector’s wakeup() method,
+2、By invoking the selector’s close() method, or
+3、By invoking the blocked thread’s interrupt() method, in which case its interrupt status will be set and the selector’s wakeup() method will be invoked.
+
+
+
+
 #ChannelTest.java
 使用多种方式获得channel，并用多种方式实现基于channel的文件间的拷贝复制
 
