@@ -17,7 +17,7 @@ public class VolatileThread extends Thread {
         int oldValue = data.getCounter();
         System.out.println("[Thread " + Thread.currentThread().getId() + "]: Old value = " + oldValue);
 
-        /* 因为操作的counter参数是int，所以效果就是多线程下读写counter是原子操作。同时是volatile的，而且也不会与其他线程的代码语句被jvm进行重排，一定会在线程中执行完整个方法逻辑代码,即读后增加再赋值一定完整执行 */
+        /* volatile只保证对变量（让long和double原本不是原子性的变量类型也实现原子性）读写（a = ××或者 b = a）的原子性，但不能保证复杂操作的原子性（a++等） */
         data.increaseCounter();
         System.out.println("[Thread " + Thread.currentThread().getId() + "] second read");
         int newValue = data.getCounter();

@@ -125,4 +125,6 @@ Lock writeLock(); 返回一个写锁
 ## volatile的使用例子 （代码包）
 volatile 主要有两方面的作用:
 <br>1.避免指令重排，例如，JVM 或者 JIT为了获得更好的性能会对语句重排序，但是 volatile 类型变量即使在没有同步块的情况下赋值也不会与其他语句重排序。
-<br>2.可见性保证，volatile 提供 happens-before 的保证，确保一个线程的修改能对其他线程是可见的。某些情况下，volatile 还能提供原子性，如读 64 位数据类型，像 long 和 double 都不是原子的(低32位和高32位)，但 volatile 类型的 double 和 long 就是原子的。
+<br>2.可见性保证，volatile提供happens-before的保证，确保一个线程的修改能对其他线程是可见的。某些情况下，volatile 还能提供原子性，如读64位数据类型，像long和double都不是原子的(低32位和高32位)，但volatile类型的double和long读写是原子的。
+<br>3.对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。
+<br>4.对一个volatile变量的读，总是能看到（任意线程）对这个volatile变量最后的写入。
