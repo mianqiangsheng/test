@@ -6,10 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,9 +24,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by lizhen on 2018/3/14.
@@ -1535,8 +1547,53 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 
 
         String order = Conventions.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "order");
-        System.out.println(order);
 
+//        List<Integer> ints = Arrays.asList(new Integer[]{1,2,3,4,5});
+//        /**
+//         * 实现的功能就是对ints这个list所有元素求和
+//         *
+//         * 这里能使用Integer::sum这种lamda表达式来写reduce()方法的BinaryOperator参数，
+//         * 实际是调用了BinaryOperator接口的R apply(T t, U u);方法，
+//         * 而Integer的sum()方法也是传入(T t, U u)两个参数，所以可如此写
+//         */
+//        Integer sum = ints.stream().reduce(0, Integer::sum);
+//        /**
+//         * 实现的功能是对ints这个list所有元素依次两两进行减操作
+//         *
+//         * 实际是调用的也是BinaryOperator接口的R apply(T t, U u);方法
+//         */
+//        Integer reduce = ints.stream().reduce(0, (a,b)->b-a);
+//        /**
+//         * 实现的功能是对ints这个list所有元素求最大元素是哪一个
+//         *
+//         * 实际是调用的也是BinaryOperator接口的R apply(T t, U u);方法
+//         * 即reduce()犯法第二个参数传入一个BinaryOperator实例后都是会被调用以上的方法进行处理，
+//         * 问题的关键是具体R apply(T t, U u);方法如何操作，Integer::sum、(a,b)->b-a、包括这里的
+//         * BinaryOperator.maxBy（）方法中的return (a, b) -> comparator.compare(a, b) >= 0 ? a : b;
+//         * 都是做的这个事情
+//         *
+//         * 不过在此之前，先通过BinaryOperator接口的maxBy(Comparator<? super T> comparator)方法
+//         * 返回一个BinaryOperator接口实例，在maxBy(Comparator<? super T> comparator)方法中其实是实现了
+//         * BinaryOperator接口的R apply(T t, U u);方法，而且是通过传入一个Comparator来实现的。
+//         *
+//         *
+//         */
+//        Integer max = ints.stream().reduce(0, BinaryOperator.maxBy((o1, o2) -> o1-o2>0?1:o1-o2==0?0:-1));
+//        /**
+//         * 实现的功能是对ints这个list所有元素依次从identity 0开始两两比较大小，后一个大就返回1.这样写实际没啥意义。。。
+//         *
+//         * 这里实际上实现了BinaryOperator接口的R apply(T t, U u);方法
+//         *
+//         */
+//        Integer max1 = ints.stream().reduce(0, (o1, o2) -> o2-o1>0?1:o2-o1==0?0:-1);
+//
+//        System.out.println(sum);
+//        System.out.println(reduce);
+//        System.out.println(max);
+//        System.out.println(max1);
+
+        long period1 = ChronoUnit.MONTHS.between(LocalDateTime.now(),LocalDateTime.of(2018,9,26,0,0));
+        System.out.println(period1);
     }
 
 
