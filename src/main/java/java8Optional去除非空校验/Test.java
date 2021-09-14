@@ -23,7 +23,7 @@ public class Test {
         Car car = person.getCar().get();
         System.out.println(car);
 
-        Person person1 = new Person(Optional.of(new Car()));
+        Person person1 = new Person(Optional.of(new Car(Optional.of(new Insurance("第三者责任险")))));
         Car car1 = person1.getCar().get();
         System.out.println(car1);
 
