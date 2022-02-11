@@ -176,6 +176,9 @@ java代码使用restemplate调用外部的https的接口
 test3.NonBlock.formal包里的代码是正式代码，实现了web服务器单线程管理多个channel连接，同时启用多线程
 进行接收消息后的业务处理，模拟了Tomcat、Netty、Nginx的大量长连接、少数活跃连接(真正在传输数据)的业务场景
 
+#util
+一些有用的工具类
+
 Selector
 selectedKeys集合 （【SelectionKey】channel，interestOps，readyOps，valid，attachment）
 Keys集合（【SelectionKey】）
