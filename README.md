@@ -179,6 +179,9 @@ test3.NonBlock.formal包里的代码是正式代码，实现了web服务器单�
 #util
 一些有用的工具类
 
+#Colored.java
+一些有用的代码实验
+
 Selector
 selectedKeys集合 （【SelectionKey】channel，interestOps，readyOps，valid，attachment）
 Keys集合（【SelectionKey】）
