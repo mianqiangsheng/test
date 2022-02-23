@@ -151,6 +151,7 @@ public abstract Object method(Object param);
 使用logback日志记录框架；
 配合logback.xml的配置自定义输出日志记录；
 使用LoggerContext自定义日志配置文件名/位置；
+自定义日志记录对象LogObject，方便后期排查问题
 
 #Test1.java
 ThreadLocal与线程池的应用注意点——注意复用线程会存在变量的线程同步问题；
@@ -281,3 +282,7 @@ volatile 主要有两方面的作用:
 <br>2.可见性保证，volatile提供happens-before的保证，确保一个线程的修改能对其他线程是可见的。某些情况下，volatile 还能提供原子性，如读64位数据类型，像long和double都不是原子的(低32位和高32位)，但volatile类型的double和long读写是原子的。
 <br>3.对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。
 <br>4.对一个volatile变量的读，总是能看到（任意线程）对这个volatile变量最后的写入。
+
+# java项目涉及的excel导入导出好用的第三方框架
+Spring Boot + EasyExcel
+https://mp.weixin.qq.com/s/MvklyWhelvjs8z9iMp69Bg

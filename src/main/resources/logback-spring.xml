@@ -9,7 +9,7 @@ packagingData：当此属性设置为true时，logback可以包含它输出的�
     <!-- 定义日志记录器的上下文名称，可以让不同的应用程序日志记录器记录到同一个文件中，用myAppName来区分信息 -->
     <contextName>myAppName</contextName>
 
-    <property name="USER_HOME" value="d:/test/logs" />
+    <property name="USER_HOME" value="c:/test/logs" />
 
     <!-- 输出到控制台 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -93,23 +93,32 @@ packagingData：当此属性设置为true时，logback可以包含它输出的�
         </encoder>
     </appender>
 
+
+    <!--
+    添加一个logger节点，name是你需要控制到的包或类，level是输出等级，additivity表示是否也需要添加到root日志中去；
+    然后root日志还是和以往一样，这样在配置好了之后，运行时能看到，WebLogController的日志被独立开来了，没有出现root配置的文件当中
+    -->
+    <!--    <logger name="com.sribs.ems.schedule.Scheduling"  level="DEBUG" additivity="false" >-->
+    <!--        <appender-ref ref="STDOUT"/>-->
+    <!--    </logger>-->
+
     <!-- name指定某个包或者某个类的日志输出，additivity如果是false，表示不追加日志信息到<root>节点的其他appender中去；
     如果是true，表示将输出到STDOUT这个appender中的日志信息会输出到FILE、ROLLINGFILE这些appender中去。
     另外，如果<root>节点中也有STDOUT这个appender，则会输出2遍。
     最后，logger中的日志等级level会覆盖<root>节点的level，多个<logger>后面的会覆盖前面的level;
     而<appender>节点中的filter属性如果也对日志级别进行筛选，按以下原则操作：<logger>定义的level级别如果低于filter属性
     （比如debug<warn），则会通过filter进行过滤；如果大于，则按<logger>定义的level级别进行输出-->
-    <logger name="test" level="debug" additivity="true" >
-        <appender-ref ref="STDOUT"/>
-    </logger>
-    <logger name="test" level="debug" additivity="true" >
-        <appender-ref ref="FILE"/>
-    </logger>
+<!--    <logger name="test" level="debug" additivity="true" >-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </logger>-->
+<!--    <logger name="test" level="debug" additivity="true" >-->
+<!--        <appender-ref ref="FILE"/>-->
+<!--    </logger>-->
 
-    <root level="ERROR">
-        <!--<appender-ref ref="STDOUT" />-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
         <!--<appender-ref ref="FILE" />-->
-        <appender-ref ref="ROLLINGFILE" />
+<!--        <appender-ref ref="ROLLINGFILE" />-->
     </root>
 
 </configuration>

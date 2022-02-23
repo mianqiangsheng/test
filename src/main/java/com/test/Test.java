@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +25,9 @@ class A{
         return id;
     }
 }
+
+
+
 
 /**
  * @SpringBootApplication 配合 new SpringApplicationBuilder(Test.class).run(args)
@@ -83,7 +87,15 @@ public class Test {
     private static final Logger LOGGER = LoggerFactory.getLogger(Test.class);
 
     public static void main(String[] args) throws InterruptedException {
-        SpringApplication.run(Test.class, args);
+        ConfigurableApplicationContext apx = SpringApplication.run(Test.class, args);
+
+        /**
+         * log.isDebugEnabled()可以避免调用log.debug()时DEBUG LEVEL下无意义地去拼接字符串
+         * LOGGER.debug("Hello {}", name); 但是这样写法就不需要log.isDebugEnabled()了
+         */
+//        if (LOGGER.isDebugEnabled()){
+//            LOGGER.debug("debug is enabled");
+//        }
 
 //        int i =0;
 //        while (i<3){
