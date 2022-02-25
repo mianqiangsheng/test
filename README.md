@@ -286,3 +286,31 @@ volatile 主要有两方面的作用:
 # java项目涉及的excel导入导出好用的第三方框架
 Spring Boot + EasyExcel
 https://mp.weixin.qq.com/s/MvklyWhelvjs8z9iMp69Bg
+
+#BTrace.java
+不重启JVM，替换掉已经加载的类一ASM、Instrument、Attach一起构筑BTrace工具实现代码动态追踪
+https://mp.weixin.qq.com/s/nHNm1WYwiUNHhfAEekUnNQ
+https://mp.weixin.qq.com/s/AO3A96LK2gzKSy3WPMXTEg
+https://github.com/btraceio/btrace/wiki
+https://github.com/btraceio/btrace
+
+#在idea的Terminal窗口运行btrace命令：
+C:\Users\86181\Desktop\work_projects\test>C:\Users\86181\li-work\btrace-v2.2.1-bin\bin\btrace -cp .\target\classes\  61456 .\src\main\java\btrace\TracingScript.java
+btrace INFO: Attaching BTrace to PID: 61456
+btrace INFO: Successfully started BTrace probe: .\src\main\java\btrace\TracingScript.java
+apply!
+
+result:true
+
+btrace.CaseObject.execute(CaseObject.java:17)
+btrace.CaseObjectMain.main(CaseObjectMain.java:24)
+
+time:960
+
+#几个注意点：
+1、在idea中需要引入btrace-v2.2.1-bin\libs下的3个bTrace相关的以来jar包（Project Structure - Libraries）。
+不仅被监控的服务需要。引入后在idea中直接写bTrace的监控脚本也更方便。
+2、被监控程序需要引入jdk提供的tools.jar包依赖才能配合Btrace，所以在idea中配置ClassPath将tool.jar添加进去
+（Project Structure - SDKs - ClassPath）
+3、如果bTrace监控脚本中涉及到用户自定义的类，则需要在btrace命令中添加 -cp 来指明对应的class或jar包文件所在的目录。
+比如上面例子.\target\classes\ 则表示当前目录的\target\classes\子目录下，再拼接代码中的类的包名btrace最终定位class文件。
