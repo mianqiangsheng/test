@@ -314,3 +314,32 @@ time:960
 （Project Structure - SDKs - ClassPath）
 3、如果bTrace监控脚本中涉及到用户自定义的类，则需要在btrace命令中添加 -cp 来指明对应的class或jar包文件所在的目录。
 比如上面例子.\target\classes\ 则表示当前目录的\target\classes\子目录下，再拼接代码中的类的包名btrace最终定位class文件。
+
+
+# breakpoint.downbit
+实现多线程的断点续传，支持迅雷下载链接。关键是RandomAccessFile、HTTP协议的Content-Length、RANGE、Content-Range字段，
+大致思想是根据要下载的文件大小切分成多个线程来下载该文件的各个部分，并随时更新下载字节数、完成
+下载的线程任务数等信息，通过一个单独的线程来显示下载进度、下载速度、预估剩余时间等信息。
+
+代码来源：https://github.com/niumoo/down-bit
+思想解释：https://www.jianshu.com/p/f34a9e3843f5
+          https://mp.weixin.qq.com/s/bI5xYq3jUtp-sviKlzHtNg
+
+可断点续传的http响应头样例：
+例子：http://www.icosky.com/icon/png/System/Neige/HTTP.png          
+![Image text](https://raw.githubusercontent.com/mianqiangsheng/img-storage/1b8a2ae04a4f29d9476714f5c0bb808ab0af0f1b/http%E5%8F%AF%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E7%9A%84headers.png)
+  
+          
+          
+          
+# park包
+研究LockSupport.park方法的作用
+
+AQS流程示意图
+来源：https://zhuanlan.zhihu.com/p/166188567
+![Image text](https://raw.githubusercontent.com/mianqiangsheng/img-storage/master/AQS%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg)
+1、没有获得锁的线程进入一个同步队列的队尾；
+2、当自己轮到队列头部的下一个节点时再次尝试获得锁（即获得执行权力），如果获得则退出同步队列，否则进入等待状态；
+3、如果自己不是头部的下一个节点则直接进入等待状态；
+4、当自己的同步队列的前驱节点被释放或自己被终端时，退出等待状态，重新进入前面的判断逻辑；
+5、这里的进入等待状态就是通过LockSupport.park来实现的；
