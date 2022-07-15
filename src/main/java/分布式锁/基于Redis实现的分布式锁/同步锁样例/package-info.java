@@ -10,6 +10,8 @@
  *
  * redisson提供的锁机制的最大特点是线程会利用redis的发布/订阅功能订阅所释放事件，避免无效的循环申请锁的资源浪费
  *
+ * redisson的分布式锁原理：https://zhuanlan.zhihu.com/p/135864820
+ *
  * 这里只给出了基于单机redis实例的分布式锁使用方法，如果redis集群的话，需要配合分布式锁算法：Redlock来使用
  *
  * redisson + Redlock简化下步骤就是：
