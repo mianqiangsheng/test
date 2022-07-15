@@ -275,6 +275,38 @@ Lock writeLock(); 返回一个写锁
 锁粗化
 一个程序对同一个锁不间断、高频地请求、同步与释放，会消耗掉一定的系统资源。锁粗化就是把很多次锁的请求合并成一个请求，降低短时间内大量锁请求、同步、释放带来的性能损耗。
 
+参考：https://mp.weixin.qq.com/s/W8S03ABcnoMayNaUpgPHPg
+重量级锁
+synchronized关键字提供了这种锁的同步机制，编译有synchronized关键字的java代码，会发现有monitorenter、monitorexit
+等指令：monitorenter 指令是在编译后插入到同步代码块的开始位置；monitorexit是插入到方法结束和异常的位置(实际隐藏了
+try-finally)，每个对象都有一个 monitor 与之关联，当一个线程执行到 monitorenter 指令时，就会获得对象所对应的 
+monitor 的所有权，也就获得到了对象的锁。
+当另外一个线程执行到同步块的时候，由于它没有对应 monitor 的所有权，就会被阻塞，此时控制权只能交给操作系统，也就会
+从 user mode 切换到 kernel mode, 由操作系统来负责线程间的调度和线程的状态变更, 需要频繁的在这两个模式下切换（上下
+文转换）。这种有点竞争就找内核的行为很不好，会引起很大的开销，所以大家都叫它重量级锁。
+
+偏向锁
+偏向锁实际就是锁对象潜意识「偏心」同一个线程来访问，让锁对象记住线程 ID，当线程再次获取锁时，亮出身份，如果同一个
+ ID 直接就获取锁就好了，是一种 load-and-test 的过程，相较 CAS 自然轻量级了一些。
+ 
+轻量级锁
+如果 CPU 通过简单的 CAS 能处理加锁/释放锁，这样就不会有上下文的切换，较重量级锁而言自然就轻了很多。
+
+偏向锁，轻量锁，它俩都不会调用系统互斥量（Mutex Lock），是为了在执行同步块的某些场景下提升性能而提出的策略。
+实际上synchronized关键字中的充当锁的对象不是一开始就是重量级锁，而是会根据代码执行情况在偏向锁、轻量级锁、
+重量级锁之间进行切换。这些锁信息在java对象头中来进行记录。
+
+偏向锁的工作流程
+![Image text](https://raw.githubusercontent.com/mianqiangsheng/img-storage/0f3a6b343e4e0b3db195c96c0efed3e340421d3d/%E5%81%8F%E5%90%91%E9%94%81%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png)
+关键点：1、对象头的可偏向状态（需要jvm启动）
+        2、对象头的markword记录的线程id（记录获得偏向锁的线程） 
+        3、对象头的epoch值（提供更换偏向锁的线程id的一种机制）
+        4、偏向撤销（告知对象不适合继续使用偏向模式）
+
+锁对象变化图
+![Image text](https://raw.githubusercontent.com/mianqiangsheng/img-storage/0f3a6b343e4e0b3db195c96c0efed3e340421d3d/%E9%94%81%E5%AF%B9%E8%B1%A1%E5%8F%98%E5%8C%96%E5%9B%BE.png)
+关键点：jvm根据线程竞争情况、代码执行情况来调整对象锁的级别
+
 
 ## volatile的使用例子 （代码包）
 volatile 主要有两方面的作用:
@@ -282,6 +314,36 @@ volatile 主要有两方面的作用:
 <br>2.可见性保证，volatile提供happens-before的保证，确保一个线程的修改能对其他线程是可见的。某些情况下，volatile 还能提供原子性，如读64位数据类型，像long和double都不是原子的(低32位和高32位)，但volatile类型的double和long读写是原子的。
 <br>3.对任意单个volatile变量的读/写具有原子性，但类似于volatile++这种复合操作不具有原子性。
 <br>4.对一个volatile变量的读，总是能看到（任意线程）对这个volatile变量最后的写入。
+
+#volatile的使用例子
+```java
+// initial conditions
+int nonVolatileField = 0;
+CopyOnWriteArrayList<String> list = /* a single String */
+
+// Thread 1
+nonVolatileField = 1;                 // (1)
+list.set(0, "x");                     // (2)
+
+// Thread 2
+String s = list.get(0);               // (3)
+if (s == "x") {
+    int localVar = nonVolatileField;  // (4)
+}
+```
+参考：https://stackoverflow.com/questions/28772539/why-setarray-method-call-required-in-copyonwritearraylist
+上面例子中的代码，1 会在 2 之前执行，3 会在 4 之前执行，这都没有疑问。
+还有一条是 volatile 修饰的属性写会在读之前执行，所以 2会在 3 之前执行。
+而执行顺序还存在传递性。所以最终 1 会在 4 之前执行。
+这样 4 获取到的值就是步骤 1 为 nonVolatileField 赋的值。
+即通过CopyOnWriteArrayList的内部数组是volatile修饰和add()方法无论何时都进行volatile写，
+保证(2)只要先执行写操作能实时被(3)读取到，让(4)读取的非volatile字段值是(1)修改的值。
+PS：两个操作之间具有happens-before关系，并不意味着前一个操作必须要在后一个操作之前执行！happens-before仅仅要求前一个操作（执行的结果）对后一个操作可见，且前一个操作按顺序排在第二个操作之前。
+    翻译下来就是volatile不保证线程执行顺序，但是保证了指令排序：
+    1、当第二个操作是volatile写时，volatile写之前的操作不会被编译器重排序到volatile写之后；
+    2、当第一个操作是volatile读时，volatile读之后的操作不会被编译器重排序到volatile读之前；
+    3、第一个操作是volatile写，第二个操作是volatile读时，不能重排序；
+    以及执行结果对其他线程的可见性。
 
 # java项目涉及的excel导入导出好用的第三方框架
 Spring Boot + EasyExcel
