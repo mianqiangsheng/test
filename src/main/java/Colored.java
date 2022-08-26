@@ -1,22 +1,16 @@
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import package1.SomeClass;
+import package1.SomeClass1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,17 +18,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Created by lizhen on 2018/3/14.
@@ -586,7 +573,7 @@ public class Colored<K, V> extends AbstractMap<K, V> {
     }
 
     @MyMethodTag("first")
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         //        Fruit f1 = new Fruit(1);
 //        Fruit f2 = new Fruit(2);
 //
@@ -1592,8 +1579,38 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 //        System.out.println(max);
 //        System.out.println(max1);
 
-        long period1 = ChronoUnit.MONTHS.between(LocalDateTime.now(),LocalDateTime.of(2018,9,26,0,0));
-        System.out.println(period1);
+//        long period1 = ChronoUnit.MONTHS.between(LocalDateTime.now(),LocalDateTime.of(2018,9,26,0,0));
+//        System.out.println(period1);
+
+
+        /**
+         * Java语法new A(){}说明
+         * 总体来说该语法糖会创建一个A类的匿名子类，匿名子类构造函数会调用父类的构造函数
+         * https://blog.csdn.net/kang389110772/article/details/100126123
+         */
+        SomeClass someClass = new SomeClass(){};
+
+        System.out.println(someClass.getClass().getTypeName());
+
+        SomeClass1 someClass1 = new SomeClass1();
+
+        System.out.println(someClass1.getClass().getTypeName());
+    }
+
+    public static String getReturn(HttpURLConnection connection) throws IOException {
+        StringBuffer buffer = new StringBuffer();
+        //将返回的输入流转换成字符串
+        try (InputStream inputStream = connection.getInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String str = null;
+            while ((str = bufferedReader.readLine()) != null) {
+                buffer.append(str);
+            }
+            String result = buffer.toString();
+            return result;
+        }
+
     }
 
 
