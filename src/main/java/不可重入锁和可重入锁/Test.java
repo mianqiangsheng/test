@@ -47,14 +47,14 @@ public class Test implements Runnable{
          * 不可重入锁，即若当前线程执行某个方法已经获取了该锁，那么在方法中尝试再次获取锁时，就会获取不到被阻塞。当前线程执行print()方法首先获取lock，接下来执行doAdd()方法就无法执行doAdd()中的逻辑，必须先释放锁。这个例子很好的说明了不可重入锁。
          * 因为底层使用的是wait()，所以可以调用interrupt()中断
          */
-        Thread thread = new Thread(test1);
-        thread.start();
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        thread.interrupt();
+//        Thread thread = new Thread(test1);
+//        thread.start();
+//        try {
+//            TimeUnit.SECONDS.sleep(3);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        thread.interrupt();
 
 
         /**
@@ -66,8 +66,8 @@ public class Test implements Runnable{
          原文：https://blog.csdn.net/u012545728/article/details/80843595
          版权声明：本文为博主原创文章，转载请附上博文链接！
          */
-//        new Thread(test2).start();
-//        new Thread(test2).start();
+        new Thread(test2).start();
+        new Thread(test2).start();
     }
 
 

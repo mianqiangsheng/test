@@ -6,7 +6,7 @@ package 不可重入锁和可重入锁;
 public class MyNonReentrantLock implements MyLock{
 
     /* 标识此锁是否被某个线程使用上锁 */
-    private boolean isLocked = false;
+    private volatile boolean isLocked = false;
 
     public synchronized void lock() throws InterruptedException{
         while(isLocked){

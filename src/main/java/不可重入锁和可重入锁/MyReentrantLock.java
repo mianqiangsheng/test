@@ -6,11 +6,11 @@ package 不可重入锁和可重入锁;
 public class MyReentrantLock implements MyLock{
 
     /* 标识此锁是否被某个线程使用上锁 */
-    boolean isLocked = false;
+    volatile boolean isLocked = false;
     /* 标识此锁是哪个线程使用 */
-    Thread  lockedBy = null;
+    volatile Thread  lockedBy = null;
     /* 标识此锁被某个线程重复获得几次 */
-    int lockedCount = 0;
+    volatile int lockedCount = 0;
 
     public synchronized void lock() throws InterruptedException{
         Thread thread = Thread.currentThread();

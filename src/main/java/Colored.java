@@ -1,12 +1,9 @@
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
-import package1.SomeClass;
-import package1.SomeClass1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +18,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 
 /**
@@ -67,10 +65,10 @@ class Student implements Cloneable {
     @Override
     public String toString() {
         return "Student [name=" + name + ", age=" + age + ", professor="
-            + professor + "]";
+                + professor + "]";
     }
 
-    public Student myClone() throws CloneNotSupportedException{
+    public Student myClone() throws CloneNotSupportedException {
 //        return super.clone();
         Student newStudent = (Student) super.clone();
         newStudent.professor = (Professor) professor.myClone();
@@ -108,7 +106,7 @@ class Professor implements Cloneable {
     }
 
     public Professor myClone() throws CloneNotSupportedException {
-        return (Professor)super.clone();
+        return (Professor) super.clone();
     }
 }
 
@@ -123,14 +121,15 @@ interface Food {
     }
 }
 
-interface ModelDriven<T> {}
+interface ModelDriven<T> {
+}
 
 @JsonIgnoreProperties({"mount", "place"})
 //@JsonFilter("myFilter")
-class Dinner implements Cloneable{
+class Dinner implements Cloneable {
 
     String attr = "father attribution";
-//    @JsonIgnore
+    //    @JsonIgnore
     String name;
 
     Integer mount;
@@ -141,7 +140,7 @@ class Dinner implements Cloneable{
 
     Integer money;
 
-    static void method(){
+    static void method() {
         System.out.println("father static method");
     }
 
@@ -199,12 +198,12 @@ class Dinner implements Cloneable{
     @Override
     public String toString() {
         return "Dinner{" +
-            "name='" + name + '\'' +
-            ", mount=" + mount +
-            ", place='" + place + '\'' +
-            ", time=" + time +
-            ", money=" + money +
-            '}';
+                "name='" + name + '\'' +
+                ", mount=" + mount +
+                ", place='" + place + '\'' +
+                ", time=" + time +
+                ", money=" + money +
+                '}';
     }
 
     @Override
@@ -212,18 +211,20 @@ class Dinner implements Cloneable{
         return super.clone();
     }
 
-    public String print1(){
+    public String print1() {
         return print2();
     }
 
-    public String print2(){return null;}
+    public String print2() {
+        return null;
+    }
 
-    public String print(){
+    public String print() {
         return "father method";
     }
 }
 
-class Lunch extends Dinner{
+class Lunch extends Dinner {
 
     String attr = "sonAttr attribution";
 
@@ -240,106 +241,114 @@ class Lunch extends Dinner{
     @Override
     public String toString() {
         return "Lunch{" +
-            "name='" + name + '\'' +
-            ", mount=" + mount +
-            ", place='" + place + '\'' +
-            ", time=" + time +
-            ", money=" + money +
-            ", extension='" + extension + '\'' +
-            '}';
+                "name='" + name + '\'' +
+                ", mount=" + mount +
+                ", place='" + place + '\'' +
+                ", time=" + time +
+                ", money=" + money +
+                ", extension='" + extension + '\'' +
+                '}';
     }
 
-    static void method(){
+    static void method() {
         System.out.println("son static method");
     }
 
-    public String print2(){return "eaeaeaeaea";}
+    public String print2() {
+        return "eaeaeaeaea";
+    }
 
-    public String print(){
+    public String print() {
         return "son method";
     }
 }
 
 class FatherClass {
-   public int i=MemberMethod();
-   public static int j=staticMethod();
-   {
-       System.out.println("父类的代码块1");
-   }
-   {
-       System.out.println("父类的代码块2");
-   }
-   static{
-       System.out.println("父类的静态代码块1");
-   }
-   static{
-       System.out.println("父类的静态代码块2");
-   }
-   public FatherClass() {
-       // TODO Auto-generated constructor stub
-       System.out.println("父类的构造函数");
-   }
-   private static int staticMethod() {
-       // TODO Auto-generated method stub
-       System.out.println("父类的静态方法");
-       return 1;
-   }
+    public int i = MemberMethod();
+    public static int j = staticMethod();
 
-   private int MemberMethod() {
-       // TODO Auto-generated method stub
-       System.out.println("父类的成员变量");
-       return 2;
-   }
+    {
+        System.out.println("父类的代码块1");
+    }
+
+    {
+        System.out.println("父类的代码块2");
+    }
+
+    static {
+        System.out.println("父类的静态代码块1");
+    }
+
+    static {
+        System.out.println("父类的静态代码块2");
+    }
+
+    public FatherClass() {
+        // TODO Auto-generated constructor stub
+        System.out.println("父类的构造函数");
+    }
+
+    private static int staticMethod() {
+        // TODO Auto-generated method stub
+        System.out.println("父类的静态方法");
+        return 1;
+    }
+
+    private int MemberMethod() {
+        // TODO Auto-generated method stub
+        System.out.println("父类的成员变量");
+        return 2;
+    }
 }
 
- class SonClass extends FatherClass {
+class SonClass extends FatherClass {
 
-     public int i = MemberMethod();
-     public static int j = staticMethod();
+    public int i = MemberMethod();
+    public static int j = staticMethod();
 
-     {
-         System.out.println("子类的代码块1");
-     }
+    {
+        System.out.println("子类的代码块1");
+    }
 
-     {
-         System.out.println("子类的代码块2");
-     }
+    {
+        System.out.println("子类的代码块2");
+    }
 
-     static {
-         System.out.println("子类的静态代码块1");
-     }
+    static {
+        System.out.println("子类的静态代码块1");
+    }
 
-     static {
-         System.out.println("子类的静态代码块2");
-     }
+    static {
+        System.out.println("子类的静态代码块2");
+    }
 
-     public SonClass() {
-         // TODO Auto-generated constructor stub
-         System.out.println("子类的构造函数");
-     }
+    public SonClass() {
+        // TODO Auto-generated constructor stub
+        System.out.println("子类的构造函数");
+    }
 
-     private static int staticMethod() {
-         // TODO Auto-generated method stub
-         System.out.println("子类的静态成员变量");
-         return 3;
-     }
+    private static int staticMethod() {
+        // TODO Auto-generated method stub
+        System.out.println("子类的静态成员变量");
+        return 3;
+    }
 
-     private int MemberMethod() {
-         // TODO Auto-generated method stub
-         System.out.println("子类的成员变量");
-         return 4;
-     }
+    private int MemberMethod() {
+        // TODO Auto-generated method stub
+        System.out.println("子类的成员变量");
+        return 4;
+    }
 
-     public int getI() {
-         return i;
-     }
+    public int getI() {
+        return i;
+    }
 
-     public int getJ() {
-         return j;
-     }
- }
+    public int getJ() {
+        return j;
+    }
+}
 
-class Message{
+class Message {
     private Dinner dinner;
 
     public Dinner getDinner() {
@@ -488,9 +497,9 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 
     static String URLencode(String str) {
         return str.replaceAll("%", "%25")
-            .replaceAll("\\+", "%2B").replaceAll(" ", "%20")
-            .replaceAll("#", "%23")
-            .replaceAll("&", "%25").replaceAll("=", "%3D");
+                .replaceAll("\\+", "%2B").replaceAll(" ", "%20")
+                .replaceAll("#", "%23")
+                .replaceAll("&", "%25").replaceAll("=", "%3D");
     }
 
     static void getSysin(String message) {
@@ -509,33 +518,31 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 
     public static byte[] hexString2Bytes(String hex) {
 
-        if ((hex == null) || (hex.equals(""))){
+        if ((hex == null) || (hex.equals(""))) {
             return null;
-        }
-        else if (hex.length()%2 != 0){
+        } else if (hex.length() % 2 != 0) {
             return null; //每个字符表示的都是半个字节，即4位二进制。而一个字符用2个字节表示，所以换成16进制的二进制表示，字符数肯定是2的倍数。
-        }
-        else{
+        } else {
             hex = hex.toUpperCase();
-            int len = hex.length()/2;
+            int len = hex.length() / 2;
             byte[] b = new byte[len]; //每个字符表示的都是半个字节，即4位二进制。所以总字节数是一半。
             char[] hc = hex.toCharArray();
-            for (int i=0; i<len; i++){
-                int p=2*i;
-                b[i] = (byte) (charToByte(hc[p]) << 4 | charToByte(hc[p+1])); // 将hex中的16进制字符2个一对拿出来还原成字节，并放入字节数组中
+            for (int i = 0; i < len; i++) {
+                int p = 2 * i;
+                b[i] = (byte) (charToByte(hc[p]) << 4 | charToByte(hc[p + 1])); // 将hex中的16进制字符2个一对拿出来还原成字节，并放入字节数组中
             }                                                                 // 比如将3和c拿出来运算，得到第一个字节是60
-                                                                              //  0000 0011 左移4位， 0011 0000
-                                                                              //  0000 1100 或运算， 0011 1100 =32+16+8+4=60
+            //  0000 0011 左移4位， 0011 0000
+            //  0000 1100 或运算， 0011 1100 =32+16+8+4=60
             return b;
         }
 
     }
 
     private static String strToBinstr(String str) {
-        char[] strChar=str.toCharArray();
-        String result="";
-        for(int i=0;i<strChar.length;i++){
-            result +=Integer.toBinaryString(strChar[i])+ " ";
+        char[] strChar = str.toCharArray();
+        String result = "";
+        for (int i = 0; i < strChar.length; i++) {
+            result += Integer.toBinaryString(strChar[i]) + " ";
         }
         return result;
     }
@@ -546,26 +553,25 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 
     }
 
-    private static class InnerClass{
+    private static class InnerClass {
         private Colored colored;
 
-        public InnerClass(Colored colored){
+        public InnerClass(Colored colored) {
             this.colored = colored;
         }
 
-        public String getOutName(){
+        public String getOutName() {
             return colored.name;
         }
 
 
-
     }
 
-    public InnerClass innerClass(){
+    public InnerClass innerClass() {
         return new InnerClass(this);
     }
 
-    public static String toUpper(final Fanxing<String> fanxing){
+    public static String toUpper(final Fanxing<String> fanxing) {
         Fanxing<String> fanxing1 = fanxing;
         fanxing1 = null;
         System.out.println(fanxing1);
@@ -1583,18 +1589,144 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 //        System.out.println(period1);
 
 
+//        /**
+//         * Java语法new A(){}说明
+//         * 总体来说该语法糖会创建一个A类的匿名子类，匿名子类构造函数会调用父类的构造函数
+//         * https://blog.csdn.net/kang389110772/article/details/100126123
+//         */
+//        SomeClass someClass = new SomeClass(){};
+//
+//        System.out.println(someClass.getClass().getTypeName());
+//
+//        SomeClass1 someClass1 = new SomeClass1();
+//
+//        System.out.println(someClass1.getClass().getTypeName());
+//
+//        String message = "{\n" +
+//                "\t\"message\": \"aaaa\",\n" +
+//                "\t\"username\": \"bbbb\",\n" +
+//                "\t\"to\": \"ccccc\"\n" +
+//                "}";
+//
+//        Map<String,String> map = new Gson().fromJson(message, HashMap.class);
+//        System.out.println(map);
+//
+//        Map<String,String> map1 = new Gson().fromJson(message, new TypeToken<HashMap<String,String>>(){}.getType());
+//        System.out.println(map);
+//
+//        /**
+//         * 使用TypeToken包裹，可以取得泛型的具体类型，这里可以获得List的泛型Integer
+//         */
+//        List<Integer> list = new ArrayList<>();
+//        Type genericSuperclass = list.getClass().getGenericSuperclass();
+//        System.out.println(genericSuperclass);
+//
+//        TypeToken<List<Integer>> typeToken = new TypeToken<List<Integer>>() {
+//        };
+//        Type type = typeToken.getType();
+//        System.out.println(type);
+
+//        Thread thread = new Thread(() -> {
+//            Colored<Object, Object> objectObjectColored = new Colored<>();
+//            try {
+//                objectObjectColored.await();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        thread.start();
+//
+//        Thread.sleep(1000);
+//
+//        thread.interrupt();
+
+//        SynchronousQueue synchronousQueue = new SynchronousQueue();
+//        new Thread(()->{
+//            try {
+//                System.out.println("poll()" + synchronousQueue.poll(5,TimeUnit.SECONDS));
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//
+//        Thread.sleep(500);
+//
+//        new Thread(()->{
+//            System.out.println("offer()" + synchronousQueue.offer("a"));
+//        }).start();
+//        System.out.println("offer()" + synchronousQueue.offer("b"));
+//        System.out.println("offer()" + synchronousQueue.offer("c"));
+//
+//        SynchronousQueue<Integer> queue = new SynchronousQueue<>(false);
+//
+//        new Thread(()->{
+//            try {
+//                queue.put(1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//
+//
+//        Thread.sleep(500);
+//        System.out.println(queue.take());
+
         /**
-         * Java语法new A(){}说明
-         * 总体来说该语法糖会创建一个A类的匿名子类，匿名子类构造函数会调用父类的构造函数
-         * https://blog.csdn.net/kang389110772/article/details/100126123
+         * 一个线程执行，如果当一个线程在执行有新的线程进来时直接被拒绝，直到线程池中的线程完成后才能再进来执行
          */
-        SomeClass someClass = new SomeClass(){};
+        ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1,
+                0L, TimeUnit.SECONDS, new SynchronousQueue(), new ThreadPoolExecutor.AbortPolicy());
 
-        System.out.println(someClass.getClass().getTypeName());
 
-        SomeClass1 someClass1 = new SomeClass1();
+        System.out.println("thread 1 is ready");
 
-        System.out.println(someClass1.getClass().getTypeName());
+        try{
+            pool.execute(() -> {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("thread 1 is running");
+            });
+        }catch (RejectedExecutionException e){
+            System.out.println("thread 1 is wrong");
+        }
+
+
+        System.out.println("thread 2 is ready");
+
+        try{
+            pool.execute(() -> {
+                System.out.println("thread 2 is running");
+            });
+        }catch (RejectedExecutionException e){
+            System.out.println("thread 2 is wrong");
+        }
+
+        System.out.println("thread 3 is ready");
+
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            pool.execute(() -> {
+                System.out.println("thread 3 is running");
+            });
+        }catch (RejectedExecutionException e){
+            System.out.println("thread 3 is wrong");
+        }
+
+        pool.shutdown();
+    }
+
+    public final void await() throws InterruptedException {
+        // 线程中断，则抛出中断异常，对应步骤1
+        if (Thread.interrupted())
+            throw new InterruptedException();
     }
 
     public static String getReturn(HttpURLConnection connection) throws IOException {
@@ -1614,16 +1746,21 @@ public class Colored<K, V> extends AbstractMap<K, V> {
     }
 
 
-    static class StudentAction extends BaseAction<Student>{}
-    static class DinnerAction extends BaseAction<Dinner>{}
+    static class StudentAction extends BaseAction<Student> {
+    }
+
+    static class DinnerAction extends BaseAction<Dinner> {
+    }
 
     /**
      * 这里ModelDriven<T> 没有使用，可以去掉
+     *
      * @param <T>
      */
-     static class BaseAction<T> implements ModelDriven<T> {
+    static class BaseAction<T> implements ModelDriven<T> {
         //在构造方法中动态获取实体类型，通过反射创建model对象
-         T model;
+        T model;
+
         public BaseAction() {
             ParameterizedType genericSuperclass = (ParameterizedType) this.getClass().getGenericSuperclass();
             //获得BaseAction上声明的泛型数组
@@ -1639,20 +1776,19 @@ public class Colored<K, V> extends AbstractMap<K, V> {
             }
         }
 
-         public T getModel() {
-             return model;
-         }
-     }
+        public T getModel() {
+            return model;
+        }
+    }
 
 
-
-    static final List<String> LIST = Collections.unmodifiableList(new ArrayList<String>(){
+    static final List<String> LIST = Collections.unmodifiableList(new ArrayList<String>() {
         {
             add("a");
         }
     });
 
-    ClassFactory factory = new ClassFactory<String>(){
+    ClassFactory factory = new ClassFactory<String>() {
         {
             System.out.println(create());
         }
@@ -1687,22 +1823,22 @@ public class Colored<K, V> extends AbstractMap<K, V> {
     }
 
 
-        public static String formatStr(String str,int number){
+    public static String formatStr(String str, int number) {
         StringBuilder stringBuilder = new StringBuilder();
-        for(int i=0;i<number;i++){
-             stringBuilder.append(str);
+        for (int i = 0; i < number; i++) {
+            stringBuilder.append(str);
         }
         return stringBuilder.toString();
     }
 
-    public static void rhomb(int length){
-        int spaceMax = (length-1)/2;
-        int levelMax = (length+1)/2;
-        for(int i=1,j=spaceMax;i<=levelMax;i++,j--){
-            System.out.println(formatStr(" ",j)+formatStr("*",2*i-1));
+    public static void rhomb(int length) {
+        int spaceMax = (length - 1) / 2;
+        int levelMax = (length + 1) / 2;
+        for (int i = 1, j = spaceMax; i <= levelMax; i++, j--) {
+            System.out.println(formatStr(" ", j) + formatStr("*", 2 * i - 1));
         }
-        for(int i=levelMax-1,j=1;i>0;i--,j++){
-            System.out.println(formatStr(" ",j)+formatStr("*",2*i-1));
+        for (int i = levelMax - 1, j = 1; i > 0; i--, j++) {
+            System.out.println(formatStr(" ", j) + formatStr("*", 2 * i - 1));
         }
     }
 
@@ -1710,7 +1846,7 @@ public class Colored<K, V> extends AbstractMap<K, V> {
         Optional<Integer> optional = Optional.ofNullable(null);
         try {
             return optional.get();
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return null;
         }
 
@@ -1726,11 +1862,12 @@ public class Colored<K, V> extends AbstractMap<K, V> {
     }
 
     public static void reset(String param) {
-        param = new String("bbb");    }
+        param = new String("bbb");
+    }
 
 }
 
-class RunImpl implements  Runnable{
+class RunImpl implements Runnable {
 
     int i;
 
@@ -1740,20 +1877,29 @@ class RunImpl implements  Runnable{
 
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getName()+": " + i);
+        System.out.println(Thread.currentThread().getName() + ": " + i);
     }
 }
 
-interface X {}
-interface Y {}
-class Ca implements X{}
-class Cb implements Y{}
-class Cc extends Ca{}
+interface X {
+}
 
-class Fanxing<T>{
-    T[] ts = (T[])new Object[10];
+interface Y {
+}
 
-    public T[] getTs(){
+class Ca implements X {
+}
+
+class Cb implements Y {
+}
+
+class Cc extends Ca {
+}
+
+class Fanxing<T> {
+    T[] ts = (T[]) new Object[10];
+
+    public T[] getTs() {
         return ts;
     }
 }
