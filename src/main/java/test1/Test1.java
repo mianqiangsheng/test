@@ -21,6 +21,7 @@ public class Test1 implements Runnable{
 
         /**
          * 使用ThreadLocal.remove()将当前线程已经使用好的变量与当前线程解绑并清除值
+         * PS: ThreadLocal用完后必须不要忘记remove，不然会造成内存泄露
          */
         studentThreadLocal.remove();
         stringThreadLocal.remove();

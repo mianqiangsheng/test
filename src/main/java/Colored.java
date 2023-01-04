@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -1539,7 +1540,7 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 //        System.out.println(dinnerAction.getModel());
 
 
-        String order = Conventions.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "order");
+//        String order = Conventions.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "order");
 
 //        List<Integer> ints = Arrays.asList(new Integer[]{1,2,3,4,5});
 //        /**
@@ -1674,53 +1675,105 @@ public class Colored<K, V> extends AbstractMap<K, V> {
         /**
          * 一个线程执行，如果当一个线程在执行有新的线程进来时直接被拒绝，直到线程池中的线程完成后才能再进来执行
          */
-        ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1,
-                0L, TimeUnit.SECONDS, new SynchronousQueue(), new ThreadPoolExecutor.AbortPolicy());
+//        ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1,
+//                0L, TimeUnit.SECONDS, new SynchronousQueue(), new ThreadPoolExecutor.AbortPolicy());
+//
+//
+//        System.out.println("thread 1 is ready");
+//
+//        try{
+//            pool.execute(() -> {
+//                try {
+//                    Thread.sleep(1000L);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println("thread 1 is running");
+//            });
+//        }catch (RejectedExecutionException e){
+//            System.out.println("thread 1 is wrong");
+//        }
+//
+//
+//        System.out.println("thread 2 is ready");
+//
+//        try{
+//            pool.execute(() -> {
+//                System.out.println("thread 2 is running");
+//            });
+//        }catch (RejectedExecutionException e){
+//            System.out.println("thread 2 is wrong");
+//        }
+//
+//        System.out.println("thread 3 is ready");
+//
+//        try {
+//            Thread.sleep(3000L);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try{
+//            pool.execute(() -> {
+//                System.out.println("thread 3 is running");
+//            });
+//        }catch (RejectedExecutionException e){
+//            System.out.println("thread 3 is wrong");
+//        }
+//
+//        pool.shutdown();
 
 
-        System.out.println("thread 1 is ready");
+//        ConcurrentHashMap<Object, Object> concurrentHashMap = new ConcurrentHashMap<>();
 
-        try{
-            pool.execute(() -> {
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("thread 1 is running");
-            });
-        }catch (RejectedExecutionException e){
-            System.out.println("thread 1 is wrong");
+//        HashMap<Object, Object> concurrentHashMap = new HashMap<>();
+//
+//        new Thread(()->{
+//            synchronized (concurrentHashMap){
+//                concurrentHashMap.clear();
+//                concurrentHashMap.put("a",1);
+//                concurrentHashMap.put("b",2);
+//                System.out.println("Thread1: " + concurrentHashMap);
+//            }
+//
+//        }).start();
+//
+//        new Thread(()->{
+//            synchronized (concurrentHashMap){
+//                concurrentHashMap.clear();
+//                concurrentHashMap.put("a",3);
+//                concurrentHashMap.put("c",4);
+//                System.out.println("Thread2: " + concurrentHashMap);
+//            }
+//
+//        }).start();
+
+        ConcurrentHashMap<Long, AtomicInteger> certificateCache = new ConcurrentHashMap<>();
+//         HashMap<Long,AtomicInteger> certificateCache = new HashMap<>(2);
+//        certificateCache.put(1L,new AtomicInteger());
+
+
+        for (int i=0;i<100;i++) {
+            int finalI = i;
+            new Thread(()->{
+                AtomicInteger atomicInteger = certificateCache.get(1L);
+                if (atomicInteger == null)
+                    certificateCache.put(1L,new AtomicInteger());
+                atomicInteger.incrementAndGet();
+                System.out.println("Thread" + finalI + ": " + certificateCache.get(1L));
+            }).start();
         }
+    }
 
+    public void validateCertificateCount(ConcurrentHashMap<Long,Integer> certificateCache, Long uid) {
 
-        System.out.println("thread 2 is ready");
+        Integer count = certificateCache.get(uid);
 
-        try{
-            pool.execute(() -> {
-                System.out.println("thread 2 is running");
-            });
-        }catch (RejectedExecutionException e){
-            System.out.println("thread 2 is wrong");
-        }
+        System.out.println(count);
 
-        System.out.println("thread 3 is ready");
+        certificateCache.put(uid,count + 1);
 
-        try {
-            Thread.sleep(3000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try{
-            pool.execute(() -> {
-                System.out.println("thread 3 is running");
-            });
-        }catch (RejectedExecutionException e){
-            System.out.println("thread 3 is wrong");
-        }
-
-        pool.shutdown();
+        System.out.println(count);
     }
 
     public final void await() throws InterruptedException {

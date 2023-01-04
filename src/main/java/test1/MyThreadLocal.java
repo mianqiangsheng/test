@@ -1,6 +1,10 @@
 package test1;
 
 /**
+ * 每一个Thread维护了一个ThreadLocal.ThreadLocalMap，key是ThreadLocal，value是放到ThreadLocal中的与线程绑定的值
+ * get：从当前线程中取出ThreadLocalMap，并取出key为ThreadLocal对象的value
+ * set：将key为ThreadLocal且value为绑定对象放入当前线程的ThreadLocalMap
+ *
  * Created by lizhen on 2018/12/7.
  */
 public class MyThreadLocal<T> extends ThreadLocal<T> {

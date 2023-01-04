@@ -21,8 +21,13 @@ public class Test {
                 /**
                  * 该方法会使当前线程进入wait状态
                  * 可以通过LockSupport.unpark()或Thread.interrupt()或意料之外的错误导致返回来解除wait状态
+                 *
+                 * LockSupport比wait/notify更灵活：
+                 * 1、可以指定哪个线程notify
+                 * 2、可以先于park()调用unpark()方法，使park()失效
                  */
                 LockSupport.park(this);
+                LockSupport.park();
                 System.out.println(Thread.currentThread().getName() + "解除park");
             }
         }, "parkThread");
