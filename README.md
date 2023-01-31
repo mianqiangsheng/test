@@ -394,7 +394,7 @@ time:960
           
           
           
-# park包
+# LockSupport包
 研究LockSupport.park方法的作用
 
 AQS流程示意图
