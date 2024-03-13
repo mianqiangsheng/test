@@ -1,4 +1,4 @@
-package test1;
+package ThreadLocal;
 
 /**
  * 每一个Thread维护了一个ThreadLocal.ThreadLocalMap，key是ThreadLocal，value是放到ThreadLocal中的与线程绑定的值

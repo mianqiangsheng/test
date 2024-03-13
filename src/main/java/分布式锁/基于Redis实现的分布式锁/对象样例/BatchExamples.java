@@ -31,7 +31,7 @@ public class BatchExamples {
         RedissonClient redisson = Redisson.create();
 
         RBatch batch = redisson.createBatch(BatchOptions.defaults());
-        batch.getMap("test1").fastPutAsync("1", "2");
+        batch.getMap("ThreadLocal").fastPutAsync("1", "2");
         batch.getMap("test2").fastPutAsync("2", "3");
         batch.getMap("test3").putAsync("2", "5");
         RFuture<Long> future = batch.getAtomicLong("counter").incrementAndGetAsync();

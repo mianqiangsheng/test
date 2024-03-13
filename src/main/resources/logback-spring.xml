@@ -88,7 +88,8 @@ packagingData：当此属性设置为true时，logback可以包含它输出的�
         <!--</rollingPolicy>-->
 
         <encoder>
-            <pattern>%contextName %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+<!--            <pattern>%contextName %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level traceId-%X{trace-id} %logger{50}-%line - %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
     </appender>
@@ -118,7 +119,7 @@ packagingData：当此属性设置为true时，logback可以包含它输出的�
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <!--<appender-ref ref="FILE" />-->
-<!--        <appender-ref ref="ROLLINGFILE" />-->
+        <appender-ref ref="ROLLINGFILE" />
     </root>
 
 </configuration>

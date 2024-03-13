@@ -13,6 +13,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -1748,21 +1751,65 @@ public class Colored<K, V> extends AbstractMap<K, V> {
 //
 //        }).start();
 
-        ConcurrentHashMap<Long, AtomicInteger> certificateCache = new ConcurrentHashMap<>();
+//        ConcurrentHashMap<Long, AtomicInteger> certificateCache = new ConcurrentHashMap<>();
 //         HashMap<Long,AtomicInteger> certificateCache = new HashMap<>(2);
 //        certificateCache.put(1L,new AtomicInteger());
 
 
-        for (int i=0;i<100;i++) {
-            int finalI = i;
-            new Thread(()->{
-                AtomicInteger atomicInteger = certificateCache.get(1L);
-                if (atomicInteger == null)
-                    certificateCache.put(1L,new AtomicInteger());
-                atomicInteger.incrementAndGet();
-                System.out.println("Thread" + finalI + ": " + certificateCache.get(1L));
-            }).start();
+//        for (int i=0;i<100;i++) {
+//            int finalI = i;
+//            new Thread(()->{
+//                AtomicInteger atomicInteger = certificateCache.get(1L);
+//                if (atomicInteger == null)
+//                    certificateCache.put(1L,new AtomicInteger());
+//                atomicInteger.incrementAndGet();
+//                System.out.println("Thread" + finalI + ": " + certificateCache.get(1L));
+//            }).start();
+//        }
+
+        /**
+         * interrupt中断的本质
+         */
+//        Thread thread = new Thread(() -> {
+//            while (true) {
+////                if (Thread.interrupted()) {
+////                    System.out.println("Thread is interrupted");
+////                    return;
+////                }
+//                try{
+//                    if (Thread.interrupted()) {
+//                        throw new InterruptedException();
+//                    }
+//                }catch (InterruptedException e){
+//                    System.out.println("Thread is interrupted");
+//                    return;
+//                }
+//            }
+//        });
+//
+//        thread.start();
+//
+//        thread.interrupt();
+
+        /**
+         * ReferenceQueue使用例子，用于接收被垃圾回收后的引用
+         * 注意：String变量、Integer缓存等会影响弱引用等回收
+         */
+        Student reference = new Student();
+//        Integer reference = 1;
+//        String reference = "a";
+        ReferenceQueue<Object> queue = new ReferenceQueue<>();
+        WeakReference weakReference = new WeakReference(reference, queue);
+        System.out.println("queue.poll()" + queue.poll());
+        reference = null;
+        /**
+         * 协助触发垃圾回收
+         */
+        for (int j = 0; j < 1000; j++) {
+            byte[] buffer = new byte[10000000];
         }
+        TimeUnit.SECONDS.sleep(3);
+        System.out.println("queue.poll()" + queue.poll());
     }
 
     public void validateCertificateCount(ConcurrentHashMap<Long,Integer> certificateCache, Long uid) {
