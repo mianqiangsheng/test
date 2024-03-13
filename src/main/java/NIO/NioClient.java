@@ -70,6 +70,9 @@ public class NioClient {
 
     public static void main(String[] args) throws Exception {
         start(9001);
+        /**
+         * 启动连接后，由于客户端和服务端连接存在，会在这里阻塞住
+         */
         System.out.println("---------------");
         new Thread(()-> {
             try {
