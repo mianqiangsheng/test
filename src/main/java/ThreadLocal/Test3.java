@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * TransmittableThreadLocal使用
  *
  * 相较于自己写的DelegatingThreadLocal，最不同的地方就是多了子线程对接收父线程后的数据进行操作后，有一个恢复的步骤
- * 因为在线程池中，线程可能复用，为了防止在runnable执行中对该线程的ThreadLocal产生了污染，然后该线程被复用去执行其他Runable时该值已被修改，不再是调用线程的值了，所以需要还原现场。
+ * 因为在线程池中，线程可能复用，为了防止在runnable执行中对该线程的ThreadLocal产生了污染，然后该线程被复用去执行其他Runnable时该值已被修改，不再是调用线程的值了，所以需要还原现场。
  *
  * @author ：li zhen
  * @description:
